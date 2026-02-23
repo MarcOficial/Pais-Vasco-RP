@@ -1,0 +1,502 @@
+
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wiki - PaísVascoRP</title>
+    <meta name="description" content="Normativas y controles básicos para jugar en PaísVascoRP.">
+    <link rel="icon" href="/img/pvrp-5.png">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap');
+
+        :root {
+            --primary: #f59e0b;
+            --primary-glow: rgba(245, 158, 11, 0.4);
+            --bg-dark: #0a0f1e;
+            --bg-card: #1e293b;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --glass-bg: rgba(10, 15, 30, 0.65);
+            --glass-border: rgba(255, 255, 255, 0.05);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            background-image:
+                radial-gradient(at 0% 0%, rgba(245, 158, 11, 0.1) 0px, transparent 50%),
+                radial-gradient(at 100% 0%, rgba(30, 64, 175, 0.1) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(245, 158, 11, 0.05) 0px, transparent 50%);
+            background-attachment: fixed;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Navbar (Shared style) */
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 5%;
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--glass-border);
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+
+        .nav-logo {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            text-decoration: none;
+            color: white;
+            font-weight: 800;
+            font-size: 1.25rem;
+            letter-spacing: -0.5px;
+        }
+
+        .nav-logo img {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+        }
+
+        .btn-back {
+            background: rgba(255, 255, 255, 0.05);
+            color: white;
+            border: 1px solid var(--glass-border);
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-back:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        /* Layout */
+        .wiki-container {
+            display: flex;
+            max-width: 1200px;
+            margin: 2rem auto;
+            width: 90%;
+            gap: 2rem;
+            flex: 1;
+            align-items: flex-start;
+        }
+
+        /* Sidebar Navigation */
+        .wiki-sidebar {
+            width: 280px;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            padding: 1.5rem;
+            position: sticky;
+            top: 100px;
+        }
+
+        .wiki-sidebar h3 {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin-bottom: 1rem;
+            letter-spacing: 1px;
+        }
+
+        .wiki-nav {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .wiki-nav a {
+            text-decoration: none;
+            color: var(--text-main);
+            font-weight: 500;
+            display: block;
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+            border-left: 3px solid transparent;
+            opacity: 0.8;
+        }
+
+        .wiki-nav a:hover {
+            background: rgba(255, 255, 255, 0.05);
+            opacity: 1;
+        }
+
+        .wiki-nav a.active {
+            background: rgba(245, 158, 11, 0.1);
+            color: var(--primary);
+            border-left-color: var(--primary);
+            opacity: 1;
+        }
+
+        /* Content Area */
+        .wiki-content {
+            flex: 1;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            padding: 3rem;
+            min-height: 600px;
+        }
+
+        .section {
+            display: none;
+            animation: fadeIn 0.4s ease;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        /* Typography inside content */
+        .wiki-content h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            color: var(--primary);
+            letter-spacing: -1px;
+        }
+
+        .wiki-content p.subtitle {
+            color: var(--text-muted);
+            margin-bottom: 2rem;
+            font-size: 1.1rem;
+        }
+
+        .wiki-content h2 {
+            margin-top: 2.5rem;
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+            border-bottom: 1px solid var(--glass-border);
+            padding-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .wiki-content p {
+            color: #cbd5e1;
+            line-height: 1.6;
+            margin-bottom: 1rem;
+        }
+
+        .wiki-content ul {
+            padding-left: 1.5rem;
+            margin-bottom: 1.5rem;
+            color: #cbd5e1;
+        }
+
+        .wiki-content li {
+            margin-bottom: 0.5rem;
+        }
+
+        /* Keyboard Keys Style */
+        kbd {
+            background: #334155;
+            border: 1px solid #475569;
+            border-radius: 6px;
+            padding: 0.2rem 0.6rem;
+            color: white;
+            font-family: monospace;
+            font-size: 0.9rem;
+            box-shadow: 0 4px 0 #1e293b, 0 5px 5px rgba(0, 0, 0, 0.4);
+            margin: 0 0.2rem;
+            transform: translateY(-2px);
+            display: inline-block;
+        }
+
+        /* Keybind Grid */
+        .keybind-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .keybind-item {
+            background: rgba(0, 0, 0, 0.2);
+            padding: 1rem;
+            border-radius: 8px;
+            border: 1px solid var(--glass-border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .keybind-desc {
+            color: var(--text-main);
+            font-weight: 500;
+        }
+
+        /* Alerts */
+        .alert {
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+            border-left: 4px solid;
+        }
+
+        .alert-warning {
+            background: rgba(245, 158, 11, 0.1);
+            border-left-color: var(--primary);
+            color: #fde68a;
+        }
+
+        .alert-danger {
+            background: rgba(239, 68, 68, 0.1);
+            border-left-color: #ef4444;
+            color: #fca5a5;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .wiki-container {
+                flex-direction: column;
+                width: 95%;
+                margin: 1rem auto;
+            }
+
+            .wiki-sidebar {
+                width: 100%;
+                position: relative;
+                top: 0;
+            }
+
+            .wiki-content {
+                padding: 1.5rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav class="navbar">
+        <a href="/" class="nav-logo">
+            <img src="/img/pvrp-5.png" alt="Logo">
+            <span>PAÍSVASCORP</span>
+        </a>
+        <a href="/" class="btn-back">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z" />
+            </svg>
+            Volver al Inicio
+        </a>
+    </nav>
+
+    <div class="wiki-container">
+        <aside class="wiki-sidebar">
+            <h3>Índice</h3>
+            <ul class="wiki-nav">
+                <li><a href="#controles" class="nav-link active" data-target="controles">🎮 Controles Básicos</a></li>
+                <li><a href="#normativa" class="nav-link" data-target="normativa">⚖️ Normativa General</a></li>
+            </ul>
+        </aside>
+
+        <main class="wiki-content">
+
+            
+            <div id="controles" class="section active">
+                <h1>Controles Básicos</h1>
+                <p class="subtitle">Guía del juego para principiantes.</p>
+
+                <p>A continuación dejamos a disposición del jugador los controles básicos de nuestro juego.</p>
+
+                <div class="alert alert-warning">
+                    <strong>Importante:</strong> Existen diversos controles no mencionados en la siguiente nota que se
+                    rigen a los básicos de cualquier juego de la plataforma Roblox.
+                </div>
+
+                <h2>🚶🏻 Controles generales a pie</h2>
+                <div class="keybind-grid">
+                    <div class="keybind-item">
+                        <span class="keybind-desc">Movimiento</span>
+                        <div><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd></div>
+                    </div>
+                    <div class="keybind-item">
+                        <span class="keybind-desc">Salto</span>
+                        <kbd>Espacio</kbd>
+                    </div>
+                    <div class="keybind-item">
+                        <span class="keybind-desc">Interacción con interfaces</span>
+                        <kbd>E</kbd>
+                    </div>
+                    <div class="keybind-item">
+                        <span class="keybind-desc">Ragdoll</span>
+                        <kbd>R</kbd>
+                    </div>
+                </div>
+
+                <h2>🚗 Controles generales en un vehículo</h2>
+                <div class="keybind-grid">
+                    <div class="keybind-item">
+                        <span class="keybind-desc">Acelerador</span>
+                        <kbd>W</kbd>
+                    </div>
+                    <div class="keybind-item">
+                        <span class="keybind-desc">Freno / Marcha atrás</span>
+                        <kbd>S</kbd>
+                    </div>
+                    <div class="keybind-item">
+                        <span class="keybind-desc">Giro a la izquierda</span>
+                        <kbd>A</kbd>
+                    </div>
+                    <div class="keybind-item">
+                        <span class="keybind-desc">Giro a la derecha</span>
+                        <kbd>D</kbd>
+                    </div>
+                    <div class="keybind-item">
+                        <span class="keybind-desc">Intermitente izquierdo</span>
+                        <kbd>Q</kbd>
+                    </div>
+                    <div class="keybind-item">
+                        <span class="keybind-desc">Entrar vehículo / Intermitente D.</span>
+                        <kbd>E</kbd>
+                    </div>
+                    <div class="keybind-item">
+                        <span class="keybind-desc">Intermitentes emergencia</span>
+                        <kbd>G</kbd>
+                    </div>
+                    <div class="keybind-item">
+                        <span class="keybind-desc">Freno de mano</span>
+                        <kbd>P</kbd>
+                    </div>
+                    <div class="keybind-item">
+                        <span class="keybind-desc">Claxon</span>
+                        <kbd>H</kbd>
+                    </div>
+                    <div class="keybind-item">
+                        <span class="keybind-desc">Salir del vehículo</span>
+                        <kbd>Espacio</kbd>
+                    </div>
+                </div>
+            </div>
+
+            
+            <div id="normativa" class="section">
+                <h1>Normativa servidores públicos</h1>
+                <p class="subtitle">Es importante leer atentamente la siguiente normativa para evitar un posible baneo
+                    in-game.</p>
+
+                <h2>🎭 1. Principio General</h2>
+                <p>Este servidor está pensado para disfrutar del rol de forma libre y divertida. No es un rol estricto,
+                    pero se pide un mínimo de coherencia y respeto para que todo el mundo pueda pasarlo bien.</p>
+
+                <h2>🧠 2. Sentido Común en el Rol</h2>
+                <ul>
+                    <li>Actúa de forma lógica y acorde a la situación.</li>
+                    <li>Evita acciones claramente irreales que rompan el rol.</li>
+                    <li>Si te equivocas, corrige el error sin discusiones.</li>
+                </ul>
+
+                <h2>🚫 3. Antirol (No permitido)</h2>
+                <p>Se considera antirol, entre otros:</p>
+                <ul>
+                    <li>Ignorar situaciones importantes de rol (accidentes, detenciones, conflictos).</li>
+                    <li>Hacer cosas imposibles (revivir de la nada, no sufrir daños sin motivo).</li>
+                    <li>Cambiar de rol para beneficiarte (por ejemplo, pasar de civil a policía para vengarte).</li>
+                    <li>Molestar de forma intencionada el rol de otros jugadores.</li>
+                </ul>
+                <div class="alert alert-danger">
+                    ⚠️ <strong>Nota:</strong> Errores puntuales se entienden; el antirol repetido o a propósito puede
+                    ser sancionado duramente.
+                </div>
+
+                <h2>🔫 4. Violencia y Conflictos</h2>
+                <ul>
+                    <li>La violencia debe tener un motivo previo de rol.</li>
+                    <li>No se permiten ataques sin razón (RDM).</li>
+                    <li>Tras un conflicto, deja un tiempo razonable antes de volver a la zona o situación.</li>
+                </ul>
+
+                <h2>💬 5. Comunicación</h2>
+                <ul>
+                    <li>Usa el chat con respeto.</li>
+                    <li>Evita insultos, provocaciones o discusiones fuera de rol.</li>
+                    <li>Si necesitas aclarar algo fuera de rol, hazlo de forma breve y sin romper la partida.</li>
+                </ul>
+
+                <h2>🤝 6. Respeto entre Jugadores</h2>
+                <ul>
+                    <li>No fuerces el rol de otros jugadores.</li>
+                    <li>No abuses de bugs o mecánicas del juego.</li>
+                    <li>Ten en cuenta que hay jugadores nuevos: ayuda antes de criticar.</li>
+                </ul>
+
+                <h2>👮 7. Moderación</h2>
+                <ul>
+                    <li>El staff puede intervenir si el rol se rompe gravemente.</li>
+                    <li>Las sanciones serán progresivas.</li>
+                    <li>Discutir decisiones del staff dentro del servidor puede conllevar sanción.</li>
+                </ul>
+            </div>
+
+        </main>
+    </div>
+
+    <script>
+        // Simple tab switching logic for the Wiki
+        const navLinks = document.querySelectorAll('.nav-link');
+        const sections = document.querySelectorAll('.section');
+
+        function switchTab(targetId) {
+            navLinks.forEach(link => link.classList.remove('active'));
+            sections.forEach(sec => sec.classList.remove('active'));
+
+            document.querySelector(`.nav-link[data-target="${targetId}"]`).classList.add('active');
+            document.getElementById(targetId).classList.add('active');
+        }
+
+        navLinks.forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const targetId = link.getAttribute('data-target');
+                switchTab(targetId);
+                window.history.pushState(null, '', `#${targetId}`);
+            });
+        });
+
+        // Check URL hash on load
+        if (window.location.hash) {
+            const targetId = window.location.hash.substring(1);
+            if (document.getElementById(targetId)) {
+                switchTab(targetId);
+            }
+        }
+    </script>
+</body>
+
+</html>
