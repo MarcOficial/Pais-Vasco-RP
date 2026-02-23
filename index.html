@@ -1,0 +1,531 @@
+
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PaísVascoRP - Servidor de Roleplay</title>
+  <meta name="description"
+    content="Vive la mejor experiencia de roleplay en Roblox. Emergencias, Policía, vida civil y mucho más te esperan.">
+  <link rel="icon" href="/img/pvrp-5.png">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap');
+
+    :root {
+      --primary: #f59e0b;
+      --primary-glow: rgba(245, 158, 11, 0.4);
+      --bg-dark: #0f172a;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Outfit', system-ui, sans-serif;
+    }
+
+    body {
+      background-color: #000;
+      color: var(--text-main);
+      overflow: hidden;
+      /* No scroll en portada */
+      height: 100vh;
+      display: flex;
+    }
+
+    /* Full Background Slider */
+    .bg-slider {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+    }
+
+    .bg-slide {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: 0;
+      transition: opacity 1.5s ease-in-out, transform 10s linear;
+      transform: scale(1.02);
+      filter: brightness(0.8);
+    }
+
+    .bg-slide.active {
+      opacity: 1;
+      transform: scale(1.05);
+    }
+
+    /* Glass Panel (Left Side) */
+    .hero-panel {
+      position: relative;
+      z-index: 10;
+      width: 42%;
+      min-width: 450px;
+      max-width: 650px;
+      height: 100%;
+      background: rgba(10, 15, 30, 0.65);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      box-shadow: 20px 0 60px rgba(0, 0, 0, 0.6);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 4rem;
+      border-right: 1px solid rgba(255, 255, 255, 0.05);
+      animation: slideInLeft 1s cubic-bezier(0.16, 1, 0.3, 1) both;
+    }
+
+    /* Decorative Glow inside panel */
+    .hero-panel::before {
+      content: '';
+      position: absolute;
+      top: -100px;
+      left: -100px;
+      width: 300px;
+      height: 300px;
+      background: var(--primary);
+      filter: blur(150px);
+      border-radius: 50%;
+      opacity: 0.15;
+      z-index: -1;
+      pointer-events: none;
+    }
+
+    /* Top Right Auth */
+    .top-right-auth {
+      position: absolute;
+      top: 2rem;
+      right: 3rem;
+      z-index: 20;
+      animation: fadeIn 1s ease 1s both;
+    }
+
+    .btn-auth {
+      background: rgba(0, 0, 0, 0.4);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: white;
+      padding: 0.75rem 1.5rem;
+      border-radius: 50px;
+      text-decoration: none;
+      font-weight: 500;
+      font-size: 0.95rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: all 0.3s;
+    }
+
+    .btn-auth:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: rgba(255, 255, 255, 0.3);
+    }
+
+    /* Header / Logo */
+    .branding {
+      display: flex;
+      align-items: center;
+      gap: 1.2rem;
+      margin-bottom: 2rem;
+      animation: fadeInUp 0.8s ease 0.2s both;
+    }
+
+    .branding img {
+      width: 56px;
+      height: 56px;
+      border-radius: 14px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+    }
+
+    .branding-text h2 {
+      font-size: 1.5rem;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      color: white;
+      line-height: 1;
+    }
+
+    .branding-text span {
+      font-size: 0.85rem;
+      color: var(--primary);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+    }
+
+    /* Update Badge */
+    .update-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.8rem;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      padding: 0.4rem 0.4rem 0.4rem 1rem;
+      border-radius: 100px;
+      text-decoration: none;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      margin-bottom: 2.5rem;
+      transition: all 0.3s;
+      animation: fadeInUp 0.8s ease 0.3s both;
+    }
+
+    .update-badge:hover {
+      background: rgba(255, 255, 255, 0.08);
+      color: white;
+      border-color: rgba(255, 255, 255, 0.2);
+      transform: translateY(-2px);
+    }
+
+    .update-badge .pill {
+      background: var(--primary);
+      color: black;
+      padding: 0.2rem 0.8rem;
+      border-radius: 100px;
+      font-weight: 700;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+    }
+
+    /* Title Area */
+    h1.hero-title {
+      font-size: clamp(3rem, 5vw, 4.5rem);
+      font-weight: 900;
+      line-height: 1.05;
+      margin-bottom: 1.5rem;
+      letter-spacing: -1.5px;
+      animation: fadeInUp 0.8s ease 0.4s both;
+    }
+
+    h1.hero-title .glow-text {
+      color: transparent;
+      -webkit-text-stroke: 1px rgba(255, 255, 255, 0.6);
+      background: url('/img/pvrp-4.png') no-repeat center;
+      -webkit-background-clip: text;
+      background-clip: text;
+      background-size: cover;
+      color: white;
+    }
+
+    h1.hero-title .highlight {
+      color: var(--primary);
+    }
+
+    p.hero-desc {
+      font-size: 1.15rem;
+      color: var(--text-muted);
+      line-height: 1.6;
+      margin-bottom: 3rem;
+      max-width: 90%;
+      animation: fadeInUp 0.8s ease 0.5s both;
+    }
+
+    /* Buttons Grid (Bento Style) */
+    .bento-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      animation: fadeInUp 0.8s ease 0.6s both;
+    }
+
+    .bento-item {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 16px;
+      padding: 1.25rem;
+      text-decoration: none;
+      color: white;
+      display: flex;
+      flex-direction: column;
+      gap: 0.8rem;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .bento-item::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.05), transparent);
+      transform: translateX(-100%);
+      transition: transform 0.6s;
+    }
+
+    .bento-item:hover::before {
+      transform: translateX(100%);
+    }
+
+    .bento-item:hover {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: rgba(255, 255, 255, 0.2);
+      transform: translateY(-4px);
+    }
+
+    .bento-main {
+      grid-column: 1 / -1;
+      background: var(--primary);
+      color: black;
+      border: none;
+      flex-direction: row;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+      font-size: 1.2rem;
+      font-weight: 800;
+      box-shadow: 0 10px 30px var(--primary-glow);
+    }
+
+    .bento-main:hover {
+      background: #d97706;
+      transform: translateY(-4px) scale(1.02);
+      color: black;
+    }
+
+    .bento-icon {
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 8px;
+    }
+
+    .bento-main .bento-icon {
+      background: rgba(0, 0, 0, 0.2);
+      border-radius: 50%;
+    }
+
+    .bento-title {
+      font-weight: 600;
+      font-size: 1.05rem;
+    }
+
+    .bento-discord:hover {
+      border-color: #5865F2;
+      box-shadow: 0 10px 30px rgba(88, 101, 242, 0.2);
+    }
+
+    .bento-discord .bento-icon {
+      color: #5865F2;
+    }
+
+    /* Animations */
+    @keyframes slideInLeft {
+      from {
+        transform: translateX(-100%);
+        opacity: 0;
+      }
+
+      to {
+        transform: translateX(0);
+        opacity: 1;
+      }
+    }
+
+    @keyframes fadeInUp {
+      from {
+        transform: translateY(20px);
+        opacity: 0;
+      }
+
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+      }
+
+      to {
+        opacity: 1;
+      }
+    }
+
+    /* Responsive */
+    @media (max-width: 900px) {
+      body {
+        overflow-y: auto;
+        overflow-x: hidden;
+      }
+
+      .hero-panel {
+        width: 100%;
+        min-width: 100%;
+        height: auto;
+        min-height: 100vh;
+        background: linear-gradient(to top, rgba(10, 15, 30, 1) 30%, rgba(10, 15, 30, 0.7) 80%, rgba(10, 15, 30, 0.4) 100%);
+        padding: 3rem 2rem;
+        justify-content: flex-end;
+        /* Push content down over image */
+        border-right: none;
+      }
+
+      .top-right-auth {
+        top: 1rem;
+        right: 1rem;
+      }
+
+      h1.hero-title {
+        font-size: 3.2rem;
+      }
+
+      .branding {
+        position: absolute;
+        top: 2rem;
+        left: 2rem;
+      }
+
+      .update-badge {
+        margin-top: 5rem;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  
+  <div class="bg-slider" id="bgSlider">
+    <img src="/img/pvrp-1.png" class="bg-slide active" alt="Background">
+    <img src="/img/pvrp-2.png" class="bg-slide" alt="Background">
+    <img src="/img/pvrp-3.png" class="bg-slide" alt="Background">
+    <img src="/img/pvrp-4.png" class="bg-slide" alt="Background">
+  </div>
+
+  
+  <div class="top-right-auth">
+    <a href="/auth/discord" class="btn-auth" id="loginBtn">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+        <path
+          d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028c.462-.63.874-1.295 1.226-1.994a.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03z" />
+      </svg>
+      Acceso Staff
+    </a>
+  </div>
+
+  
+  <main class="hero-panel">
+
+    <div class="branding">
+      <img src="/img/pvrp-5.png" alt="Logo PV:RP">
+      <div class="branding-text">
+        <h2>PAÍSVASCORP</h2>
+        <span id="serverVersion">Alpha</span>
+      </div>
+    </div>
+
+    <a href="/updates" class="update-badge" id="updateBadgeWrapper" style="display: none;">
+      <span class="pill">NUEVO</span>
+      <span id="updateBadgeText">Cargando actualización...</span>
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+        stroke-linecap="round" stroke-linejoin="round">
+        <path d="M5 12h14M12 5l7 7-7 7" />
+      </svg>
+    </a>
+
+    <h1 class="hero-title">
+      Tu historia en <br> <span class="highlight">Euskadi</span> comienza hoy.
+    </h1>
+
+    <p class="hero-desc">
+      Únete a la ciudad más inmersiva de Roblox. Asume el rol de policía, personal médico, mecánico o forma tu propio
+      destino en las calles.
+    </p>
+
+    <div class="bento-grid">
+      <a href="#" class="bento-item bento-main" id="btnPlay" target="_blank">
+        <div class="bento-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z" />
+          </svg>
+        </div>
+        JUGAR AHORA
+      </a>
+
+      <a href="/wiki" class="bento-item">
+        <div class="bento-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M4 6h16v2H4zm0 5h16v2H4zm0 5h16v2H4z" />
+          </svg>
+        </div>
+        <span class="bento-title">Normativas & Wiki</span>
+      </a>
+
+      <a href="#" class="bento-item bento-discord" id="btnDiscord" target="_blank">
+        <div class="bento-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+            <path
+              d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028c.462-.63.874-1.295 1.226-1.994a.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03z" />
+          </svg>
+        </div>
+        <span class="bento-title">Unirse al Discord</span>
+      </a>
+
+    </div>
+  </main>
+
+  <script>
+    // Automatic Background Slider
+    const slides = document.querySelectorAll('.bg-slide');
+    let currentSlide = 0;
+
+    setInterval(() => {
+      slides[currentSlide].classList.remove('active');
+      currentSlide = (currentSlide + 1) % slides.length;
+      slides[currentSlide].classList.add('active');
+    }, 5000);
+
+    // Fetch Config URLs
+    fetch('/api/settings/public')
+      .then(res => res.json())
+      .then(config => {
+        if (config.robloxUrl) document.getElementById('btnPlay').href = config.robloxUrl;
+        if (config.discordUrl) document.getElementById('btnDiscord').href = config.discordUrl;
+        if (config.serverVersion) document.getElementById('serverVersion').textContent = config.serverVersion;
+      })
+      .catch(console.error);
+
+    // Fetch Latest Update
+    fetch('/api/posts')
+      .then(res => res.json())
+      .then(posts => {
+        if (posts && posts.length > 0) {
+          const latest = posts[0];
+          document.getElementById('updateBadgeText').textContent = latest.title;
+          document.getElementById('updateBadgeWrapper').href = `/updates?id=${latest._id}`;
+          document.getElementById('updateBadgeWrapper').style.display = 'inline-flex';
+        }
+      })
+      .catch(console.error);
+
+    // Auth Status Check
+    fetch('/api/auth/me', { credentials: 'include' })
+      .then(res => {
+        if (res.ok) {
+          const btn = document.getElementById('loginBtn');
+          btn.href = '/dashboard';
+          btn.innerHTML = `<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/></svg> Dashboard Staff`;
+        }
+      })
+      .catch(() => { });
+  </script>
+</body>
+
+</html>
