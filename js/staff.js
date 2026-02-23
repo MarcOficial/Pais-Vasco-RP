@@ -1,7 +1,7 @@
 // IDs autorizados para gestionar el staff
 const allowedIds = [
-    "123456789012345678", // tu ID
-    "987654321098765432"  // otro ID si quieres
+    "1394639946643411048", // tu ID
+    "1394639946643411048"  // otro ID si quieres
 ];
 
 let allStaff = [];
