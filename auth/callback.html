@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Procesando acceso…</title>
+  <script>
+    async function handleCallback() {
+      const params = new URLSearchParams(window.location.search);
+      const code = params.get("code");
+
+      if (!code) {
+        alert("Error al iniciar sesión con Discord.");
+        window.location.href = "/";
+        return;
+      }
+
+      try {
+        const res = await fetch("/api/auth/discord", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+          body: JSON.stringify({ code })
+        });
+
+        if (!res.ok) throw new Error("Error en el login");
+
+        window.location.href = "/dashboard.html";
+      } catch (err) {
+        alert("No se pudo iniciar sesión.");
+        window.location.href = "/";
+      }
+    }
+
+    handleCallback();
+  </script>
+</head>
+<body>
+  Conectando…
+</body>
+</html>
