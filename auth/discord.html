@@ -5,7 +5,7 @@
   <title>Conectando con Discord…</title>
   <script>
     const CLIENT_ID = "1472984276533248103";
-    const REDIRECT_URI = "https://discord/auth/callback.html";
+    const REDIRECT_URI = "https://pais-vasco-rp.vercel.app/auth/callback.html";
     const SCOPE = "identify guilds";
 
     window.location.href =
@@ -13,6 +13,7 @@
       `&redirect_uri=${encodeURIComponent(REDIRECT_URI)}` +
       `&response_type=code&scope=${encodeURIComponent(SCOPE)}`;
   </script>
+
 </head>
 <body>
   Redirigiendo a Discord…
